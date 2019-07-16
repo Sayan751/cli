@@ -7,6 +7,7 @@ const project = require('./aurelia_project/aurelia.json');
 const { AureliaPlugin, ModuleDependenciesPlugin } = require('aurelia-webpack-plugin');
 const { ProvidePlugin } = require('webpack');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 // config helpers:
 const ensureArray = (config) => config && (Array.isArray(config) ? config : [config]) || [];
@@ -351,6 +352,13 @@ module.exports = ({ production, extractCss, analyze, tests, hmr } = {}) => ({
     })),
     ...when(!tests, new CopyWebpackPlugin([
       { from: 'static', to: outDir, ignore: ['.*'] }])), // ignore dot (hidden) files
-    ...when(analyze, new BundleAnalyzerPlugin())
+    ...when(analyze, new BundleAnalyzerPlugin()),
+    /**
+     * Note that the usage of following plugin cleans the webpack output directory before build.
+     * In case you want to generate any file in the output path as a part of pre-build step, this plugin will likely
+     * remove those before the webpack build. In that case consider disabling the plugin, and instead use something like
+     * `del` (https://www.npmjs.com/package/del), or `rimraf` (https://www.npmjs.com/package/rimraf).
+     */
+    new CleanWebpackPlugin()
   ]
 });
