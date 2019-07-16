@@ -11,7 +11,7 @@ import {Aurelia} from 'aurelia-framework';
 import environment from './environment';
 // @endif
 // @if feat.webpack
-import environment from '../config/environment.json';
+import * as environment from '../config/environment.json';
 import {PLATFORM} from 'aurelia-pal';
 // @endif
 
