@@ -1,0 +1,7 @@
+import { NPM } from 'aurelia-cli/lib/package-managers/npm';
+
+export default function() {
+  process.emitWarning('`au build` task is deprecated for the webpack projects, and a potential candidate for removal in future. Consider using `npm run build` instead.');
+
+  return (new NPM()).install(['build'], process.cwd(), 'run');
+}
