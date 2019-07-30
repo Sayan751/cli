@@ -26,34 +26,12 @@ class AuBuildDoesNotThrowCommandLineErrors extends Test {
   }
 }
 
-class AuBuildWatchPicksUpFileChanges extends Test {
+class AuBuildStartsWebpackInWatchMode extends Test {
   constructor(fileToChange) {
     super('au build --watch picks up file changes');
 
     this.fileToChange = fileToChange || path.join('src', 'app.html');
     this.firstBuildCompleted = false;
-  }
-
-  changeFile() {
-    return new Promise(resolve => {
-      const fullPath = path.join(this.context.workingDirectory, this.fileToChange);
-
-      this.debug(`changing file ${fullPath}`);
-
-      fs.readFile(fullPath, 'utf-8', (err, data) => {
-        if (err) {
-          throw err;
-        }
-
-        fs.writeFile(fullPath, data + ' ', 'utf-8', (error) => {
-          if (error) {
-            throw error;
-          }
-
-          resolve();
-        });
-      });
-    });
   }
 
   onOutput(message) {
@@ -62,14 +40,9 @@ class AuBuildWatchPicksUpFileChanges extends Test {
     if (message.toLowerCase().indexOf('error') > -1) {
       this.executeCommand.stop();
       this.fail();
-    } else if (isBuildCompletedMessage(message)) {
-      if (!this.firstBuildCompleted) {
-        this.firstBuildCompleted = true;
-        setTimeout(() => this.changeFile(), 1000);
-      } else {
-        this.success();
-        this.executeCommand.stop();
-      }
+    } else if (message.indexOf('webpack is watching the files') > -1) {
+      this.success();
+      this.executeCommand.stop();
     }
   }
 
@@ -87,5 +60,5 @@ function isBuildCompletedMessage(msg) {
 
 module.exports = {
   AuBuildDoesNotThrowCommandLineErrors,
-  AuBuildWatchPicksUpFileChanges
+  AuBuildStartsWebpackInWatchMode
 };
