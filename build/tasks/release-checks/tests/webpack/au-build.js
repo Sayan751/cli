@@ -31,6 +31,7 @@ class AuBuildWatchPicksUpFileChanges extends Test {
     super('au build --watch picks up file changes');
 
     this.fileToChange = fileToChange || path.join('src', 'app.html');
+    this.firstBuildCompleted = false;
   }
 
   changeFile() {
@@ -58,13 +59,17 @@ class AuBuildWatchPicksUpFileChanges extends Test {
   onOutput(message) {
     this.debug(message);
 
-    if (isBuildCompletedMessage(message)) {
-      setTimeout(() => this.changeFile(), 1000);
-    }
-
-    if (isBuildCompletedMessage(message)) {
-      this.success();
+    if (message.toLowerCase().indexOf('error') > -1) {
       this.executeCommand.stop();
+      this.fail();
+    } else if (isBuildCompletedMessage(message)) {
+      if (!this.firstBuildCompleted) {
+        this.firstBuildCompleted = true;
+        setTimeout(() => this.changeFile(), 1000);
+      } else {
+        this.success();
+        this.executeCommand.stop();
+      }
     }
   }
 
@@ -77,7 +82,7 @@ class AuBuildWatchPicksUpFileChanges extends Test {
 }
 
 function isBuildCompletedMessage(msg) {
-  return msg.indexOf('Built at:') > -1;
+  return msg.indexOf('Built at') > -1;
 }
 
 module.exports = {
