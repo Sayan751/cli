@@ -28,7 +28,7 @@ class AuBuildDoesNotThrowCommandLineErrors extends Test {
 
 class AuBuildStartsWebpackInWatchMode extends Test {
   constructor(fileToChange) {
-    super('au build --watch picks up file changes');
+    super('au build --watch starts webpack in watch mode');
 
     this.fileToChange = fileToChange || path.join('src', 'app.html');
     this.firstBuildCompleted = false;
